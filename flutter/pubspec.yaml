@@ -1,0 +1,21 @@
+name: yes_ui
+description: 'YumeStarUI (a.k.a. YesUI), NGA series UI library.'
+version: 0.1.1
+
+repository: https://github.com/OOM-WG/YumeStarUI
+homepage: https://app.niggergo.work/yesui/
+
+environment:
+  sdk: '>=2.12.0 <4.0.0'
+  flutter: '>=1.17.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0
+
+flutter:
