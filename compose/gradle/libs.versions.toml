@@ -1,0 +1,41 @@
+[versions]
+kotlin = "2.3.+"
+compose = "1.10.+"
+gitVersion = "5.+"
+
+unstyled = "1.49.+"
+icons = "2.2.+"
+miuix = "0.9.+"
+
+compileSdk = "37"
+buildTools = "37.0.0"
+
+[libraries]
+gitVersion = { module = "com.palantir.gradle.gitversion:gradle-git-version", version.ref = "gitVersion" }
+
+kotlinxBrowser = "org.jetbrains.kotlinx:kotlinx-browser:0.5.+"
+
+systemExtension = "com.highcapable.betterandroid:system-extension:1.0.+"
+
+composeFoundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+composeMaterialRipple = { module = "org.jetbrains.compose.material:material-ripple", version.ref = "compose" }
+composeRuntime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+composeUi = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+composeResources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
+
+unstyled = { module = "com.composables:composeunstyled", version.ref = "unstyled" }
+unstyledPrimitives = { module = "com.composables:composeunstyled-primitives", version.ref = "unstyled" }
+unstyledTheme = { module = "com.composables:composeunstyled-theming", version.ref = "unstyled" }
+
+lucideAndroid = { module = "com.composables:icons-lucide-android", version.ref = "icons" }
+lucideMultiplatform = { module = "com.composables:icons-lucide-cmp", version.ref = "icons" }
+
+miuixBlur = { module = "top.yukonga.miuix.kmp:miuix-blur", version.ref = "miuix" }
+miuixShapes = { module = "top.yukonga.miuix.kmp:miuix-shapes", version.ref = "miuix" }
+
+[plugins]
+androidMultiplatform = "com.android.kotlin.multiplatform.library:9.0.0-alpha06"
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
+gitVersion = { id = "com.palantir.git-version" }

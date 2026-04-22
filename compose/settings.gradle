@@ -6,17 +6,6 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-
-// noinspection GradleDynamicVersion
-plugins {
-	// noinspection AndroidGradlePluginVersion
-	id 'com.android.kotlin.multiplatform.library' version '+' apply false
-	id 'org.jetbrains.kotlin.multiplatform' version '+' apply false
-	id 'org.jetbrains.kotlin.plugin.compose' version '+' apply false
-	id 'org.jetbrains.compose' version '+' apply false
-	id 'com.palantir.git-version' version '+' apply false
-}
-
 dependencyResolutionManagement {
 	repositories {
 		mavenLocal()
@@ -28,4 +17,7 @@ dependencyResolutionManagement {
 
 rootProject.name = 'YumeStarUI'
 
-include ':core'
+include ':widgets-preview'
+
+include ':yesui:bom'
+include ':yesui:core', ':yesui:widgets', ':yesui:ultra', ':yesui:icons'

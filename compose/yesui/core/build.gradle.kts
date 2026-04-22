@@ -7,7 +7,6 @@ plugins {
 	id("com.android.kotlin.multiplatform.library")
 	kotlin("multiplatform")
 	kotlin("plugin.compose")
-	id("org.jetbrains.compose")
 	`maven-publish`
 	id("com.palantir.git-version")
 }
@@ -16,13 +15,13 @@ kotlin {
 	applyDefaultHierarchyTemplate()
 	withSourcesJar()
 
-	androidLibrary {
+	android {
 		namespace = "work.niggergo.yesui.core"
-		compileSdk = 37
-		minSdk = 16
-		buildToolsVersion = "37.0.0"
+		compileSdk = libs.versions.compileSdk.get().toInt()
+		minSdk = 1
+		buildToolsVersion = libs.versions.buildTools.get()
 
-		compilerOptions.jvmTarget = JvmTarget.JVM_1_8
+		compilerOptions.jvmTarget = JvmTarget.JVM_17
 
 		optimization {
 			consumerKeepRules.publish = true
@@ -39,12 +38,23 @@ kotlin {
 	js(IR) { browser() }
 	wasmJs { browser() }
 
-	// noinspection GradleDynamicVersion
 	sourceSets {
 		commonMain.dependencies {
-			implementation("org.jetbrains.compose.foundation:foundation:+")
-			implementation("org.jetbrains.compose.ui:ui:+")
-			implementation("org.jetbrains.compose.runtime:runtime:+")
+			implementation(libs.composeFoundation)
+			implementation(libs.composeMaterialRipple)
+			implementation(libs.composeRuntime)
+			implementation(libs.composeUi)
+
+			implementation(libs.unstyledPrimitives)
+			implementation(libs.unstyledTheme)
+
+			implementation(libs.miuixShapes)
+		}
+		androidMain.dependencies {
+			implementation(libs.systemExtension)
+		}
+		webMain.dependencies {
+			implementation(libs.kotlinxBrowser)
 		}
 	}
 }

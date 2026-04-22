@@ -48,7 +48,5 @@ fun Project.configurePublishConfig(nameExt: String = ""): MavenPublication.() ->
 		else             -> listOf(
 			"${name}RuntimeClasspath", "${name}CompileKlibraries"
 		).firstOrNull { project.configurations.findByName(it) != null }
-	}?.let {
-		versionMapping { allVariants { fromResolutionOf(it) } }
-	}
+	}?.let { versionMapping { allVariants { fromResolutionOf(it) } } }
 }

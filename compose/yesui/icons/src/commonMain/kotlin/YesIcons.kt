@@ -1,3 +1,5 @@
 @file:Suppress("PackageDirectoryMismatch", "unused")
 
-package work.niggergo.yesui.core
+package work.niggergo.yesui.icons
+
+object YesIcons
