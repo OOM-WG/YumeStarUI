@@ -15,9 +15,9 @@ javaPlatform { allowDependencies() }
 
 dependencies {
 	constraints {
-		api(project(":yesui:core"))
-		api(project(":yesui:widgets"))
-		api(project(":yesui:ultra"))
+		api(project(":yesui:foundation"))
+		api(project(":yesui:components"))
+		api(project(":yesui:patterns"))
 		api(project(":yesui:icons"))
 	}
 }

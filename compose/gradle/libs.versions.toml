@@ -5,7 +5,6 @@ gitVersion = "5.+"
 
 unstyled = "1.49.+"
 icons = "2.2.+"
-miuix = "0.9.+"
 
 compileSdk = "37"
 buildTools = "37.0.0"
@@ -30,12 +29,12 @@ unstyledTheme = { module = "com.composables:composeunstyled-theming", version.re
 lucideAndroid = { module = "com.composables:icons-lucide-android", version.ref = "icons" }
 lucideMultiplatform = { module = "com.composables:icons-lucide-cmp", version.ref = "icons" }
 
-miuixBlur = { module = "top.yukonga.miuix.kmp:miuix-blur", version.ref = "miuix" }
-miuixShapes = { module = "top.yukonga.miuix.kmp:miuix-shapes", version.ref = "miuix" }
+miuixBlur = "top.yukonga.miuix.kmp:miuix-blur:0.9.+"
 
 [plugins]
 androidMultiplatform = "com.android.kotlin.multiplatform.library:9.0.0-alpha06"
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
+composeHotReload = "org.jetbrains.compose.hot-reload:1.1.+"
 gitVersion = { id = "com.palantir.git-version" }

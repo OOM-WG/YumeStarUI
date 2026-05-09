@@ -17,7 +17,7 @@ dependencyResolutionManagement {
 
 rootProject.name = 'YumeStarUI'
 
-include ':widgets-preview'
+include ':demo'
 
 include ':yesui:bom'
-include ':yesui:core', ':yesui:widgets', ':yesui:ultra', ':yesui:icons'
+include ':yesui:foundation', ':yesui:components', ':yesui:patterns', ':yesui:icons'
