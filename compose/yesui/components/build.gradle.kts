@@ -47,8 +47,6 @@ kotlin {
 			api(libs.composeUi)
 			api(libs.composeRuntime)
 
-			implementation(libs.unstyled)
-
 			implementation(libs.miuixBlur)
 		}
 	}

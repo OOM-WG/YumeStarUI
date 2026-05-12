@@ -41,10 +41,10 @@ fun YesTheme(
 
 			colors?.let {
 				properties[ColorProperty] = mapOf(
-					BrandToken to it.brand,
-					BrandVariantToken to it.brandVariant,
-					OnBrandToken to it.onBrand,
-					DisabledBrandToken to it.disabledBrand,
+					TintToken to it.tint,
+					TintVariantToken to it.tintVariant,
+					OnTintToken to it.onTint,
+					DisabledTintToken to it.disabledTint,
 					TitleColorToken to it.title,
 					BackgroundToken to it.background,
 					BackgroundVariantToken to it.backgroundVariant,

@@ -3,7 +3,7 @@ kotlin = "2.3.+"
 compose = "1.10.+"
 gitVersion = "5.+"
 
-unstyled = "1.49.+"
+unstyled = "2.0.+"
 icons = "2.2.+"
 
 compileSdk = "37"
@@ -22,7 +22,6 @@ composeRuntime = { module = "org.jetbrains.compose.runtime:runtime", version.ref
 composeUi = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
 composeResources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
 
-unstyled = { module = "com.composables:composeunstyled", version.ref = "unstyled" }
 unstyledPrimitives = { module = "com.composables:composeunstyled-primitives", version.ref = "unstyled" }
 unstyledTheme = { module = "com.composables:composeunstyled-theming", version.ref = "unstyled" }
 

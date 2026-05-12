@@ -2,24 +2,23 @@
 
 package work.niggergo.yesui.foundation.components
 
-import androidx.compose.foundation.Indication
-import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.ProvideTextStyle
-import com.composeunstyled.UnstyledButton
+import com.composeunstyled.*
 import work.niggergo.yesui.foundation.theme.YesTheme
 
 @Suppress("unused")
 @Composable
-inline fun Button(
-	noinline onClick: () -> Unit,
+fun Button(
+	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	enabled: Boolean = true,
 	shape: Shape = YesTheme.shapes.button,
@@ -35,7 +34,7 @@ inline fun Button(
 	),
 	horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
 	verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-	crossinline content: @Composable RowScope.() -> Unit,
+	content: @Composable RowScope.() -> Unit,
 ) {
 	val colors = YesTheme.colors
 	val typography = YesTheme.typography
@@ -44,28 +43,36 @@ inline fun Button(
 		enabled                     -> colors.backgroundVariant
 		else                        -> colors.disabledBackground
 	}
-	val cntColor = when {
+	val contentColor = when {
 		contentColor.isSpecified -> contentColor
 		enabled                  -> colors.textPrimary
 		else                     -> colors.textTertiary
 	}
 	val indication = indication ?: LocalIndication.current
+	val modifier =
+		modifier.defaultMinSize(minWidth = 58.dp, minHeight = YesTheme.sizes.controlHeight).clip(shape).background(bgColor)
+			.then(
+				if (borderWidth > 0.dp && borderColor.isSpecified) Modifier.border(
+					borderWidth, borderColor, shape
+				) else Modifier
+			)
 
 	UnstyledButton(
 		onClick = onClick,
 		modifier = modifier,
 		enabled = enabled,
-		shape = shape,
-		backgroundColor = bgColor,
-		contentColor = cntColor,
-		borderColor = borderColor,
-		borderWidth = borderWidth,
 		interactionSource = interactionSource,
 		indication = indication,
 		contentPadding = contentPadding,
-		horizontalArrangement = horizontalArrangement,
-		verticalAlignment = verticalAlignment,
 	) {
-		ProvideTextStyle(typography.button) { content() }
+		ProvideTextStyle(typography.button) {
+			ProvideContentColor(contentColor) {
+				Row(
+					horizontalArrangement = horizontalArrangement,
+					verticalAlignment = verticalAlignment,
+					content = content,
+				)
+			}
+		}
 	}
 }

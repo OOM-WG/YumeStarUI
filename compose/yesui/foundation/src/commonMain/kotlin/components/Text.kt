@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.composeunstyled.LocalTextStyle
-import com.composeunstyled.UnstyledText
+import com.composeunstyled.Text as UnstyledText
 
 @Suppress("unused")
 @Composable

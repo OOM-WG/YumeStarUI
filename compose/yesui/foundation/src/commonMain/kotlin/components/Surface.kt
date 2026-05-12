@@ -32,16 +32,13 @@ fun Surface(
 	if (backgroundColor.isSpecified) modifier = modifier.background(backgroundColor)
 	if (borderWidth > 0.dp && borderColor.isSpecified) modifier = modifier.border(borderWidth, borderColor, shape)
 
-	Box(
-		modifier = modifier,
-		contentAlignment = contentAlignment,
-	) {
+	Box(modifier, contentAlignment) {
 		ProvideContentColor(contentColor) {
 			Box(
-				modifier = Modifier.padding(contentPadding),
-				contentAlignment = contentAlignment,
-				propagateMinConstraints = propagateMinConstraints,
-				content = content,
+				Modifier.padding(contentPadding),
+				contentAlignment,
+				propagateMinConstraints,
+				content,
 			)
 		}
 	}

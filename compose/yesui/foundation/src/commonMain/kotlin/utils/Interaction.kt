@@ -36,12 +36,17 @@ data class RippleStyle(
 		): RippleStyle {
 			val colors = YesTheme.colors
 			val lightTheme = colors.background.luminance() >= 0.5f
+			val neutralColor = lerp(
+				start = colors.textPrimary,
+				stop = colors.backgroundVariant,
+				fraction = if (lightTheme) 0.18f else 0.26f,
+			)
 			val color = when {
 				color.isSpecified -> color
 				else              -> lerp(
-					start = colors.textPrimary,
-					stop = colors.backgroundVariant,
-					fraction = if (lightTheme) 0.18f else 0.26f,
+					start = neutralColor,
+					stop = colors.tint,
+					fraction = if (lightTheme) 0.28f else 0.36f,
 				)
 			}
 			val alpha = rippleAlpha ?: defaultRippleAlpha(

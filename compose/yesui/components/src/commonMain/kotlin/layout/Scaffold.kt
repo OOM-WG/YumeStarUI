@@ -4,7 +4,10 @@ package work.niggergo.yesui.components.layout
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
@@ -23,6 +26,7 @@ import top.yukonga.miuix.kmp.blur.*
 import work.niggergo.yesui.components.utils.*
 import work.niggergo.yesui.foundation.components.*
 import work.niggergo.yesui.foundation.theme.*
+import work.niggergo.yesui.foundation.utils.rememberRippleIndication
 import work.niggergo.yesui.foundation.utils.rippleClickable
 import work.niggergo.yesui.icons.YesBasicIcons
 import kotlin.math.abs
@@ -142,10 +146,12 @@ fun Scaffold(
 		horizontal = 12.dp,
 		vertical = 20.dp,
 	),
+	topBar: @Composable BoxScope.() -> Unit = {},
 	navigationContent: @Composable ColumnScope.(ScaffoldNavigationLayoutInfo) -> Unit = {},
 	content: @Composable BoxScope.(PaddingValues) -> Unit,
 ) = BoxWithConstraints(modifier.fillMaxSize()) {
 	val toggleButtonSize = 52.dp
+	val topBarMinHeight = 44.dp
 	val toggleButtonOuterPadding = 16.dp
 	val navigationTopSpacing = 12.dp
 	val navigationHeaderClearance = toggleButtonSize + toggleButtonOuterPadding + navigationTopSpacing
@@ -160,6 +166,7 @@ fun Scaffold(
 	val startInsetPx = with(density) { windowPadding.calculateLeftPadding(layoutDirection).toPx() }
 	val endInsetPx = with(density) { windowPadding.calculateRightPadding(layoutDirection).toPx() }
 	val topInset = windowPadding.calculateTopPadding()
+	val topBarTopPadding = topInset + toggleButtonOuterPadding + (toggleButtonSize - topBarMinHeight) / 2
 	val pageCornerRadius = 16.dp
 	val pageShapePaddingPx = with(density) { pageCornerRadius.toPx() }
 
@@ -378,6 +385,8 @@ fun Scaffold(
 			layoutDirection = layoutDirection,
 			pageCornerRadius = pageCornerRadius,
 			surfaceColor = palette.pageSurfaceColor,
+			topBarTopPadding = topBarTopPadding,
+			topBar = topBar,
 		) { content(pageContentPadding) }
 
 		ToggleButton(
@@ -396,7 +405,6 @@ fun Scaffold(
 			startOffsetPx = pageStartPx,
 			layoutDirection = layoutDirection,
 			topPadding = topInset + navigationHeaderClearance,
-			density = density,
 			onDragStart = {
 				isDragging = true
 				dragWidthPx = navigationWidthPx.value
@@ -468,12 +476,12 @@ private inline fun BoxScope.NavigationPanel(
 				top = padding.calculateTopPadding() + topClearance,
 				end = endPadding + safeEndPadding,
 				bottom = padding.calculateBottomPadding(),
-			),
+			)
 		) {
 			Box(
 				Modifier.align(
 					if (layoutDirection == LayoutDirection.Ltr) Alignment.TopStart else Alignment.TopEnd,
-				).width(info.safeContainerWidth).fillMaxHeight(),
+				).width(info.safeContainerWidth).fillMaxHeight()
 			) {
 				Column(
 					Modifier.align(Alignment.TopCenter).width(info.safeWidth).fillMaxHeight(),
@@ -494,14 +502,16 @@ private fun BoxScope.PageContent(
 	layoutDirection: LayoutDirection,
 	pageCornerRadius: Dp,
 	surfaceColor: Color,
+	topBarTopPadding: Dp,
+	topBar: @Composable BoxScope.() -> Unit,
 	content: @Composable BoxScope.() -> Unit,
 ) {
 	val shape = rememberPageShape(layoutDirection, pageCornerRadius, hasNavigation)
 	val directionSign = if (layoutDirection == LayoutDirection.Ltr) 1 else -1
 
 	Surface(
-		Modifier.align(if (layoutDirection == LayoutDirection.Ltr) Alignment.TopStart else Alignment.TopEnd).width(width)
-			.fillMaxHeight().offset { IntOffset((startOffsetPx * directionSign).roundToInt(), 0) },
+		modifier = Modifier.align(if (layoutDirection == LayoutDirection.Ltr) Alignment.TopStart else Alignment.TopEnd)
+			.width(width).fillMaxHeight().offset { IntOffset((startOffsetPx * directionSign).roundToInt(), 0) },
 		shape = shape,
 		backgroundColor = surfaceColor,
 		contentColor = YesTheme.colors.textPrimary,
@@ -509,10 +519,10 @@ private fun BoxScope.PageContent(
 		propagateMinConstraints = true,
 	) {
 		Box(Modifier.fillMaxSize()) {
-			Box(
-				Modifier.align(Alignment.TopCenter).width(contentWidth).fillMaxHeight(),
-				content = content,
-			)
+			Box(Modifier.align(Alignment.TopCenter).width(contentWidth).fillMaxHeight()) {
+				content()
+				Box(Modifier.fillMaxSize().padding(top = topBarTopPadding)) { topBar() }
+			}
 		}
 	}
 }
@@ -529,6 +539,7 @@ private fun ToggleButton(
 	onExpand: () -> Unit,
 ) {
 	val colors = YesTheme.colors
+	val layoutDirection = LocalLayoutDirection.current
 	val blurSupported = useBlur && isRenderEffectSupported()
 	val buttonShape = YesTheme.shapes.iconButton
 	val iconPainter = when (value) {
@@ -564,10 +575,13 @@ private fun ToggleButton(
 		when (value) {
 			ScaffoldNavigationMode.Hidden   -> Box(Modifier.fillMaxSize().rippleClickable(onClick = onRail))
 
-			ScaffoldNavigationMode.Rail     -> Row(Modifier.fillMaxSize()) {
-				Box(Modifier.weight(1f).fillMaxHeight().rippleClickable(onClick = onHide))
-				Box(Modifier.weight(1f).fillMaxHeight().rippleClickable(onClick = onExpand))
-			}
+			ScaffoldNavigationMode.Rail     -> Box(
+				Modifier.fillMaxSize().splitRippleClickable(
+					layoutDirection = layoutDirection,
+					onStartClick = onHide,
+					onEndClick = onExpand,
+				)
+			)
 
 			ScaffoldNavigationMode.Expanded -> Box(Modifier.fillMaxSize().rippleClickable(onClick = onRail))
 		}
@@ -575,50 +589,83 @@ private fun ToggleButton(
 }
 
 @Composable
-private fun DragHandle(
+private fun Modifier.splitRippleClickable(
+	layoutDirection: LayoutDirection,
+	onStartClick: () -> Unit,
+	onEndClick: () -> Unit,
+): Modifier {
+	val interactionSource = remember { MutableInteractionSource() }
+	val rippleIndication = rememberRippleIndication()
+	val currentOnStartClick by rememberUpdatedState(onStartClick)
+	val currentOnEndClick by rememberUpdatedState(onEndClick)
+
+	return indication(interactionSource, rippleIndication).pointerInput(layoutDirection) {
+		awaitEachGesture {
+			val down = awaitFirstDown()
+			val press = PressInteraction.Press(down.position)
+			interactionSource.tryEmit(press)
+
+			val isStartSide = if (layoutDirection == LayoutDirection.Ltr) {
+				down.position.x < size.width / 2f
+			} else {
+				down.position.x >= size.width / 2f
+			}
+			val up = waitForUpOrCancellation()
+
+			if (up == null) {
+				interactionSource.tryEmit(PressInteraction.Cancel(press))
+			} else {
+				interactionSource.tryEmit(PressInteraction.Release(press))
+				if (isStartSide) currentOnStartClick() else currentOnEndClick()
+			}
+		}
+	}
+}
+
+@Composable
+private fun BoxScope.DragHandle(
 	width: Dp,
 	startOffsetPx: Float,
 	layoutDirection: LayoutDirection,
 	topPadding: Dp,
-	density: Density,
 	onDragStart: () -> Unit,
 	onDragDelta: (Float) -> Unit,
 	onDragEnd: () -> Unit,
 ) {
-	val widthPx = with(density) { width.toPx() }
 	val latestStartOffsetPx by rememberUpdatedState(startOffsetPx)
 	val latestLayoutDirection by rememberUpdatedState(layoutDirection)
 	val latestOnDragStart by rememberUpdatedState(onDragStart)
 	val latestOnDragDelta by rememberUpdatedState(onDragDelta)
 	val latestOnDragEnd by rememberUpdatedState(onDragEnd)
 
-	Box(Modifier.fillMaxHeight().padding(top = topPadding).fillMaxWidth().pointerInput(Unit) {
-		var isDraggingHandle = false
-		detectHorizontalDragGestures(
-			onDragStart = { offset ->
-				val edgeX = when (latestLayoutDirection) {
-					LayoutDirection.Ltr -> latestStartOffsetPx
-					LayoutDirection.Rtl -> size.width - latestStartOffsetPx
-				}
-				isDraggingHandle = abs(offset.x - edgeX) <= widthPx
-				if (isDraggingHandle) latestOnDragStart()
-			},
-			onHorizontalDrag = { change, dragAmount ->
-				if (isDraggingHandle) {
-					change.consume()
-					latestOnDragDelta(dragAmount)
-				}
-			},
-			onDragEnd = {
-				if (isDraggingHandle) latestOnDragEnd()
-				isDraggingHandle = false
-			},
-			onDragCancel = {
-				if (isDraggingHandle) latestOnDragEnd()
-				isDraggingHandle = false
-			},
-		)
-	})
+	Box(
+		Modifier.align(if (layoutDirection == LayoutDirection.Ltr) Alignment.TopStart else Alignment.TopEnd).offset {
+			val offset = latestStartOffsetPx.roundToInt()
+			IntOffset(if (latestLayoutDirection == LayoutDirection.Ltr) offset else -offset, 0)
+		}.width(width).fillMaxHeight().padding(top = topPadding).pointerInput(Unit) {
+			var isDraggingHandle = false
+			detectHorizontalDragGestures(
+				onDragStart = {
+					isDraggingHandle = true
+					if (isDraggingHandle) latestOnDragStart()
+				},
+				onHorizontalDrag = { change, dragAmount ->
+					if (isDraggingHandle) {
+						change.consume()
+						latestOnDragDelta(dragAmount)
+					}
+				},
+				onDragEnd = {
+					if (isDraggingHandle) latestOnDragEnd()
+					isDraggingHandle = false
+				},
+				onDragCancel = {
+					if (isDraggingHandle) latestOnDragEnd()
+					isDraggingHandle = false
+				},
+			)
+		},
+	)
 }
 
 @Composable

@@ -47,9 +47,8 @@ fun YesColors.navigationGradientEndColor() = surface.copy(
 
 fun YesColors.controlGradientStartColor() = controlGlass.fillColor
 
-fun YesColors.controlGradientEndColor() =
-	if (isDarkPalette) brand.copy(alpha = 0.06f).compositeOver(controlGlass.blurBaseColor)
-	else Color.White.copy(alpha = 0.08f).compositeOver(controlGlass.blurBaseColor)
+fun YesColors.controlGradientEndColor() = if (isDarkPalette) tint.copy(alpha = 0.06f).compositeOver(controlGlass.blurBaseColor)
+else Color.White.copy(alpha = 0.08f).compositeOver(controlGlass.blurBaseColor)
 
 @Composable
 fun YesBlurStyle.blurColors() = BlurDefaults.blurColors(

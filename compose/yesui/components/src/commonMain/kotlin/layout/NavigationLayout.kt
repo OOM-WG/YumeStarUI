@@ -33,41 +33,37 @@ fun NavigationLayout(
 	header: @Composable BoxScope.(ScaffoldNavigationLayoutInfo) -> Unit = {},
 	body: @Composable BoxScope.(ScaffoldNavigationLayoutInfo) -> Unit = {},
 	footer: (@Composable ColumnScope.(ScaffoldNavigationLayoutInfo) -> Unit)? = null,
-) {
-	Column(
-		modifier = modifier.fillMaxSize(),
-	) {
-		Box(
-			modifier = headerModifier.fillMaxWidth(),
-			content = { header(info) },
-		)
+) = Column(modifier.fillMaxSize()) {
+	Box(
+		headerModifier.fillMaxWidth(),
+		content = { header(info) },
+	)
 
-		Box(
-			modifier = bodyModifier.weight(1f, fill = true).fillMaxWidth(),
-			content = { body(info) },
-		)
+	Box(
+		bodyModifier.weight(1f, fill = true).fillMaxWidth(),
+		content = { body(info) },
+	)
 
-		footer?.let {
-			Box(
-				modifier = footerModifier.fillMaxWidth().padding(horizontal = footerHorizontalInset),
-				contentAlignment = footerAlignment,
-			) {
-				if (footerContainer) NavigationFooterContainer(
-					info = info,
-					shape = footerShape,
-					backgroundColor = footerBackgroundColor,
-					contentColor = footerContentColor,
-					contentPadding = footerPadding,
-					itemSpacing = footerItemSpacing,
-					horizontalAlignment = footerHorizontalAlignment,
-					content = it,
-				)
-				else Column(
-					verticalArrangement = Arrangement.spacedBy(footerItemSpacing),
-					horizontalAlignment = footerHorizontalAlignment,
-					content = { it(info) },
-				)
-			}
+	footer?.let {
+		Box(
+			footerModifier.fillMaxWidth().padding(horizontal = footerHorizontalInset),
+			footerAlignment,
+		) {
+			if (footerContainer) NavigationFooterContainer(
+				info = info,
+				shape = footerShape,
+				backgroundColor = footerBackgroundColor,
+				contentColor = footerContentColor,
+				contentPadding = footerPadding,
+				itemSpacing = footerItemSpacing,
+				horizontalAlignment = footerHorizontalAlignment,
+				content = it,
+			)
+			else Column(
+				verticalArrangement = Arrangement.spacedBy(footerItemSpacing),
+				horizontalAlignment = footerHorizontalAlignment,
+				content = { it(info) },
+			)
 		}
 	}
 }

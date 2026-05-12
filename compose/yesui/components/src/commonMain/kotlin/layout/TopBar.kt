@@ -8,10 +8,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import work.niggergo.yesui.foundation.components.Icon
 import work.niggergo.yesui.foundation.components.Surface
 import work.niggergo.yesui.foundation.theme.YesTheme
+import work.niggergo.yesui.foundation.utils.rippleClickable
+import work.niggergo.yesui.icons.YesBasicIcons
 
 @Suppress("unused")
 @Composable
@@ -20,16 +24,22 @@ fun TopBar(
 	containerSpacing: Dp = 8.dp,
 	minContainerHeight: Dp = 44.dp,
 	shadowElevation: Dp = 16.dp,
+	onBack: (() -> Unit)? = null,
+	backShape: Shape = YesTheme.shapes.pill,
 	titleShape: Shape = YesTheme.shapes.pill,
 	actionsShape: Shape = YesTheme.shapes.pill,
+	backBackgroundColor: Color = Color.Unspecified,
 	titleBackgroundColor: Color = Color.Unspecified,
 	actionsBackgroundColor: Color = Color.Unspecified,
+	backContentColor: Color = Color.Unspecified,
 	titleContentColor: Color = Color.Unspecified,
 	actionsContentColor: Color = Color.Unspecified,
+	backContentPadding: PaddingValues = PaddingValues(),
 	titleContentPadding: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 3.dp),
 	actionsContentPadding: PaddingValues = PaddingValues(horizontal = 12.dp),
 	titleItemSpacing: Dp = 8.dp,
 	actionsItemSpacing: Dp = 0.dp,
+	backContainerModifier: Modifier = Modifier,
 	titleContainerModifier: Modifier = Modifier,
 	actionsContainerModifier: Modifier = Modifier,
 	title: @Composable RowScope.() -> Unit,
@@ -38,9 +48,42 @@ fun TopBar(
 	val colors = YesTheme.colors
 
 	Row(
-		modifier = modifier.fillMaxWidth(),
+		modifier.fillMaxWidth(),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
+		onBack?.let { onClick ->
+			TopBarContainer(
+				modifier = backContainerModifier,
+				minHeight = minContainerHeight,
+				shadowElevation = shadowElevation,
+				shape = backShape,
+				backgroundColor = backBackgroundColor,
+				contentColor = backContentColor,
+				defaultBackgroundColor = colors.surface,
+				defaultContentColor = colors.textPrimary,
+				contentPadding = backContentPadding,
+				itemSpacing = 0.dp,
+			) {
+				Box(
+					Modifier.defaultMinSize(
+						minWidth = minContainerHeight,
+						minHeight = minContainerHeight,
+					).rippleClickable(
+						role = Role.Button,
+						onClick = onClick,
+					),
+					Alignment.Center,
+				) {
+					Icon(
+						YesBasicIcons.ArrowLeft,
+						size = YesTheme.sizes.icon,
+					)
+				}
+			}
+
+			Spacer(Modifier.width(containerSpacing))
+		}
+
 		TopBarContainer(
 			modifier = titleContainerModifier,
 			minHeight = minContainerHeight,
@@ -88,21 +131,18 @@ private fun TopBarContainer(
 	contentPadding: PaddingValues,
 	itemSpacing: Dp,
 	content: @Composable RowScope.() -> Unit,
+) = Surface(
+	modifier = modifier.shadow(shadowElevation, shape, clip = false).defaultMinSize(minHeight = minHeight).wrapContentWidth(),
+	shape = shape,
+	backgroundColor = backgroundColor.takeIf { it.isSpecified } ?: defaultBackgroundColor,
+	contentColor = contentColor.takeIf { it.isSpecified } ?: defaultContentColor,
+	contentPadding = contentPadding,
+	contentAlignment = Alignment.Center,
 ) {
-	Surface(
-		modifier = modifier.shadow(shadowElevation, shape, clip = false).defaultMinSize(minHeight = minHeight)
-			.wrapContentWidth(),
-		shape = shape,
-		backgroundColor = backgroundColor.takeIf { it.isSpecified } ?: defaultBackgroundColor,
-		contentColor = contentColor.takeIf { it.isSpecified } ?: defaultContentColor,
-		contentPadding = contentPadding,
-		contentAlignment = Alignment.Center,
-	) {
-		Row(
-			modifier = Modifier.wrapContentWidth(),
-			horizontalArrangement = Arrangement.spacedBy(itemSpacing),
-			verticalAlignment = Alignment.CenterVertically,
-			content = content,
-		)
-	}
+	Row(
+		Modifier.wrapContentWidth(),
+		horizontalArrangement = Arrangement.spacedBy(itemSpacing),
+		verticalAlignment = Alignment.CenterVertically,
+		content = content,
+	)
 }

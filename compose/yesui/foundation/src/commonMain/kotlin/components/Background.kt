@@ -13,16 +13,18 @@ import work.niggergo.yesui.foundation.theme.YesTheme
 
 @Suppress("unused")
 @Composable
-fun Background(
-	modifier: Modifier = Modifier, background: YesBackground? = null
-) = (background ?: YesTheme.background)?.let { bg ->
-	when (bg) {
-		is YesBackground.SolidColor        -> Box(Modifier.fillMaxSize().background(bg.color).then(modifier))
-		is YesBackground.GradientBrush     -> Box(Modifier.fillMaxSize().background(bg.brush).then(modifier))
-		is YesBackground.PainterBackground -> Image(
-			bg.painter, null, Modifier.fillMaxSize().then(modifier),
-			bg.alignment, bg.contentScale,
-			bg.alpha,
-		)
-	}
-} ?: Unit
+fun Background(modifier: Modifier = Modifier, background: YesBackground? = null) =
+	(background ?: YesTheme.background)?.let { bg ->
+		when (bg) {
+			is YesBackground.SolidColor        -> Box(Modifier.fillMaxSize().background(bg.color).then(modifier))
+			is YesBackground.GradientBrush     -> Box(Modifier.fillMaxSize().background(bg.brush).then(modifier))
+			is YesBackground.PainterBackground -> Image(
+				bg.painter,
+				contentDescription = null,
+				modifier = Modifier.fillMaxSize().then(modifier),
+				alignment = bg.alignment,
+				contentScale = bg.contentScale,
+				alpha = bg.alpha,
+			)
+		}
+	} ?: Unit

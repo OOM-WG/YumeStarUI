@@ -12,10 +12,14 @@ compose.resources {
 	packageOfResClass = "work.niggergo.yesui.demo.generated.resources"
 }
 
+compose.desktop {
+	application { mainClass = "work.niggergo.yesui.demo.Main_jvmKt" }
+}
+
 kotlin {
 	applyDefaultHierarchyTemplate()
 
-	jvm { compilerOptions.jvmTarget = JvmTarget.JVM_17 }
+	jvm { compilerOptions.jvmTarget = JvmTarget.JVM_11 }
 
 	@OptIn(ExperimentalWasmDsl::class) wasmJs {
 		browser {

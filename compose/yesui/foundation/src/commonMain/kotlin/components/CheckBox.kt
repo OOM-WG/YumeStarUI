@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.UnstyledCheckbox
 import work.niggergo.yesui.foundation.theme.YesTheme
 
 @Suppress("unused")
@@ -19,29 +19,34 @@ import work.niggergo.yesui.foundation.theme.YesTheme
 fun CheckBox(
 	checked: Boolean,
 	modifier: Modifier = Modifier,
-	backgroundColor: Color = if (checked) YesTheme.colors.brand else YesTheme.colors.divider,
-	contentColor: Color = YesTheme.colors.onBrand,
+	size: Dp = 26.dp,
+	backgroundColor: Color = if (checked) YesTheme.colors.tint else YesTheme.colors.divider,
+	contentColor: Color = YesTheme.colors.onTint,
 	enabled: Boolean = true,
 	onCheckedChange: ((Boolean) -> Unit)? = null,
 	shape: Shape = YesTheme.shapes.pill,
-	borderColor: Color = if (checked) YesTheme.colors.brand else YesTheme.colors.divider,
-	borderWidth: Dp = 1.dp,
+	borderColor: Color = Color.Unspecified,
+	borderWidth: Dp = 0.dp,
 	interactionSource: MutableInteractionSource? = null,
 	indication: Indication? = LocalIndication.current,
 	contentDescription: String? = null,
-	checkIcon: @Composable () -> Unit,
-) = UnstyledCheckbox(
-	checked = checked,
+	checkIcon: (@Composable () -> Unit)? = null,
+) = AnimatedCheckBox(
+	value = if (checked) ToggleableState.On else ToggleableState.Off,
 	modifier = modifier,
-	backgroundColor = if (enabled) backgroundColor else if (checked) YesTheme.colors.disabledBrand else YesTheme.colors.disabledBackgroundVariant,
-	contentColor = if (enabled) contentColor else YesTheme.colors.disabledBackground,
+	size = size,
+	backgroundColor = backgroundColor,
+	contentColor = contentColor,
+	uncheckedBackgroundColor = YesTheme.colors.divider,
+	disabledBackgroundColor = YesTheme.colors.disabledBackgroundVariant,
+	disabledContentColor = YesTheme.colors.disabledBackground,
 	enabled = enabled,
-	onCheckedChange = onCheckedChange,
+	onClick = onCheckedChange?.let { { it(!checked) } },
 	shape = shape,
-	borderColor = if (enabled) borderColor else if (checked) YesTheme.colors.disabledBrand else YesTheme.colors.disabledBackgroundVariant,
+	borderColor = borderColor,
 	borderWidth = borderWidth,
 	interactionSource = interactionSource,
 	indication = indication,
 	contentDescription = contentDescription,
-	checkIcon = checkIcon,
+	checkIcon = checkIcon?.let { icon -> { state -> if (state == ToggleableState.On) icon() } },
 )

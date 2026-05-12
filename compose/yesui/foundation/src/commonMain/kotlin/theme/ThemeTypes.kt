@@ -23,10 +23,10 @@ private val DarkContentBase = Color(0xFFFFFFFF)
 @Suppress("unused")
 @Immutable
 data class YesColors(
-	val brand: Color = Color.Unspecified,
-	val brandVariant: Color = Color.Unspecified,
-	val onBrand: Color = Color.Unspecified,
-	val disabledBrand: Color = Color.Unspecified,
+	val tint: Color = Color.Unspecified,
+	val tintVariant: Color = Color.Unspecified,
+	val onTint: Color = Color.Unspecified,
+	val disabledTint: Color = Color.Unspecified,
 	val title: Color = Color.Unspecified,
 	val background: Color = Color.Unspecified,
 	val backgroundVariant: Color = Color.Unspecified,
@@ -43,7 +43,7 @@ data class YesColors(
 ) {
 	val isDarkPalette = background.isSpecified && background.luminance() < 0.5f
 	val panelGlass = resolvePanelGlassColors(surface, isDarkPalette)
-	val controlGlass = resolveControlGlassColors(surface, brand, isDarkPalette)
+	val controlGlass = resolveControlGlassColors(surface, tint, isDarkPalette)
 }
 
 @Immutable
@@ -60,50 +60,46 @@ internal fun resolveColors(
 	tintBackground: Boolean,
 	systemColors: SystemColors,
 ): YesColors {
-	val brand = colors.brand.takeIf { it.isSpecified } ?: systemColors.accentColor ?: JavaFXDefaultAccentColor
+	val tint = colors.tint.takeIf { it.isSpecified } ?: systemColors.accentColor ?: JavaFXDefaultAccentColor
 	val fallbackBackground = systemColors.backgroundColor ?: if (darkMode) DarkBackgroundBase else LightBackgroundBase
 	val fallbackContent = systemColors.foregroundColor ?: if (darkMode) DarkContentBase else LightContentBase
 	val background = colors.background.takeIf { it.isSpecified } ?: if (tintBackground) blend(
-		brand, fallbackBackground, 0.09f
+		tint, fallbackBackground, 0.09f
 	) else fallbackBackground
 	val backgroundVariant = colors.backgroundVariant.takeIf { it.isSpecified } ?: run {
 		val backgroundVariantBase = elevatedContainer(background, darkMode)
-		if (tintBackground) blend(brand, backgroundVariantBase, 0.16f) else backgroundVariantBase
+		if (tintBackground) blend(tint, backgroundVariantBase, 0.16f) else backgroundVariantBase
 	}
 	val surface = colors.surface.takeIf { it.isSpecified } ?: resolveSurfaceColor(
 		background = background,
-		brand = brand,
+		tint = tint,
 		tintBackground = tintBackground,
 	)
 	val textPrimary = colors.textPrimary.takeIf { it.isSpecified } ?: fallbackContent
 	val textSecondary = colors.textSecondary.takeIf { it.isSpecified } ?: textPrimary.copy(alpha = 0.72f)
 	val textTertiary = colors.textTertiary.takeIf { it.isSpecified } ?: textPrimary.copy(alpha = 0.56f)
-	val onBrand = colors.onBrand.takeIf { it.isSpecified } ?: contentColorFor(brand)
-	val brandVariant =
-		colors.brandVariant.takeIf { it.isSpecified } ?: blend(brand, backgroundVariant, if (darkMode) 0.30f else 0.18f)
-	val disabledBrand =
-		colors.disabledBrand.takeIf { it.isSpecified } ?: blend(brand, backgroundVariant, if (darkMode) 0.24f else 0.28f)
-	val title = colors.title.takeIf { it.isSpecified } ?: brand
+	val onTint = colors.onTint.takeIf { it.isSpecified } ?: contentColorFor(tint)
+	val tintVariant =
+		colors.tintVariant.takeIf { it.isSpecified } ?: blend(tint, backgroundVariant, if (darkMode) 0.30f else 0.18f)
+	val disabledTint =
+		colors.disabledTint.takeIf { it.isSpecified } ?: blend(tint, backgroundVariant, if (darkMode) 0.24f else 0.28f)
+	val title = colors.title.takeIf { it.isSpecified } ?: tint
 	val activeBackground = colors.activeBackground.takeIf { it.isSpecified } ?: blend(
-		textPrimary,
-		backgroundVariant,
-		if (darkMode) 0.10f else 0.05f
+		textPrimary, backgroundVariant, if (darkMode) 0.10f else 0.05f
 	)
 	val disabledBackground = colors.disabledBackground.takeIf { it.isSpecified } ?: backgroundVariant
 	val disabledBackgroundVariant = colors.disabledBackgroundVariant.takeIf { it.isSpecified } ?: blend(
-		textPrimary,
-		backgroundVariant,
-		if (darkMode) 0.12f else 0.08f
+		textPrimary, backgroundVariant, if (darkMode) 0.12f else 0.08f
 	)
-	val border = colors.border.takeIf { it.isSpecified } ?: brand
+	val border = colors.border.takeIf { it.isSpecified } ?: tint
 	val divider = colors.divider.takeIf { it.isSpecified } ?: disabledBackgroundVariant
 	val backdrop = colors.backdrop.takeIf { it.isSpecified } ?: Color.Black.copy(alpha = 0.56f)
 
 	return YesColors(
-		brand = brand,
-		brandVariant = brandVariant,
-		onBrand = onBrand,
-		disabledBrand = disabledBrand,
+		tint = tint,
+		tintVariant = tintVariant,
+		onTint = onTint,
+		disabledTint = disabledTint,
 		title = title,
 		background = background,
 		backgroundVariant = backgroundVariant,
@@ -122,7 +118,7 @@ internal fun resolveColors(
 
 private fun resolveSurfaceColor(
 	background: Color,
-	brand: Color,
+	tint: Color,
 	tintBackground: Boolean,
 ): Color {
 	val darkPalette = background.luminance() < 0.5f
@@ -130,11 +126,8 @@ private fun resolveSurfaceColor(
 	val surfaceTintAlpha = if (darkPalette) 0.18f else 0.74f
 	val baseSurface = surfaceTint.copy(alpha = surfaceTintAlpha).compositeOver(background)
 
-	return if (tintBackground) {
-		brand.copy(alpha = 0.03f).compositeOver(baseSurface)
-	} else {
-		baseSurface
-	}
+	return if (tintBackground) tint.copy(alpha = 0.03f).compositeOver(baseSurface)
+	else baseSurface
 }
 
 private fun resolvePanelGlassColors(
@@ -147,11 +140,11 @@ private fun resolvePanelGlassColors(
 
 private fun resolveControlGlassColors(
 	surface: Color,
-	brand: Color,
+	tint: Color,
 	darkPalette: Boolean,
 ) = YesGlassColors(
 	blurBaseColor = if (darkPalette) Color.Black.copy(alpha = 0.22f) else surface.copy(alpha = 0.16f),
-	blurTintColor = if (darkPalette) brand.copy(alpha = 0.05f) else Color.White.copy(alpha = 0.12f),
+	blurTintColor = if (darkPalette) tint.copy(alpha = 0.05f) else Color.White.copy(alpha = 0.12f),
 )
 
 @Immutable
@@ -203,7 +196,7 @@ data class YesShapes(
 	val button: Shape = large,
 	val card: Shape = large,
 	val dialog: Shape = extraLarge,
-	val sheet: Shape = extraLarge,
+	val sheet: Shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
 	val input: Shape = medium,
 	val iconButton: Shape = pill,
 )

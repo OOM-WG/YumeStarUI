@@ -2,14 +2,16 @@
 
 package work.niggergo.yesui.foundation.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.composeunstyled.UnstyledHorizontalSeparator
+import com.composeunstyled.UnstyledVerticalSeparator
 import work.niggergo.yesui.foundation.theme.YesTheme
 
 @Suppress("unused")
@@ -21,13 +23,15 @@ fun Divider(
 	vertical: Boolean = false,
 ) {
 	val color = color.takeIf { it.isSpecified } ?: YesTheme.colors.divider
-	val modifier = if (vertical) Modifier.fillMaxHeight().then(modifier)
-	else Modifier.fillMaxWidth().then(modifier)
 
-	Box(
-		modifier.then(
-			if (vertical) Modifier.background(color).width(thickness)
-			else Modifier.background(color).height(thickness)
-		)
+	if (vertical) UnstyledVerticalSeparator(
+		color = color,
+		modifier = Modifier.fillMaxHeight().then(modifier),
+		thickness = thickness,
+	)
+	else UnstyledHorizontalSeparator(
+		color = color,
+		modifier = Modifier.fillMaxWidth().then(modifier),
+		thickness = thickness,
 	)
 }
